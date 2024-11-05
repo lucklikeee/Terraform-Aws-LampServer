@@ -18,9 +18,9 @@ resource "aws_security_group" "network-security-group" {
     }
   
   ingress {
-    description = "WHM"
-    from_port   = 2087
-    to_port     = 2087
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] 
     }
@@ -49,13 +49,9 @@ resource "aws_instance" "vm-instance" {
   #associate_public_ip_address = true
   #user_data                   = file("install.sh")
   provisioner "file" {
-     source="/root/tftest/cpanel-dnsonly/install.sh"
+     source="/root/tftest/apache-server/install.sh"
      destination="/tmp/install.sh"
 	}
-  provisioner "file" {
-     source="/root/tftest/cpanel-dnsonly/dnsonly-install.tgz"
-     destination="/tmp/dnsonly-install.tgz"
-        }
   provisioner "remote-exec" {
   inline=[
   "sudo sh /tmp/install.sh"
@@ -66,11 +62,11 @@ resource "aws_instance" "vm-instance" {
       type        = "ssh"
       host        = self.public_ip
       user        = "ec2-user"
-      private_key = file("/root/tftest/cpanel-dnsonly/tftest")
+      private_key = file("/root/tftest/apache-server/tftest")
       timeout     = "4m"
    }
 
    tags = {
-    Name = "cPanel-DNSOnly-TESTE"
+    Name = "Terraform-LAMP"
   }
 }
